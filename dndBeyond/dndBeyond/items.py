@@ -10,6 +10,17 @@ from scrapy.loader.processors import TakeFirst
 
 
 def mapStats(statList):
+    """
+    List of stats of the character.
+    Each chunk of 5 elements relates to a single stat.
+    This will split that up and create a dictionary with the required info.
+    Args:
+        statList (list): list of strings containing details of the character's stats
+
+    Returns (dict): dictionary of the form {'stat':{'value': int,
+                                                    'modifier': int}}
+
+    """
     statsChunks = [statList[x:x + 5] for x in range(0, len(statList), 5)]
     stats = {}
     for chunk in statsChunks:
@@ -22,6 +33,17 @@ def mapStats(statList):
     yield stats
 
 def mapSkills(skillList):
+    """
+    List of skills of the character.
+    Each chunk of 4 elements relates to a single stat.
+    This will split that up and create a dictionary with the required info.
+    Args:
+        skillList (list): list of strings containing details of the character's skills
+
+    Returns (dict): dictionary of the form {'stat':{'attribute': str,
+                                                    'modifier': int}}
+
+    """
     skillsChunks = [skillList[x:x + 4] for x in range(0, len(skillList), 4)]
     skills = {}
     for chunk in skillsChunks:

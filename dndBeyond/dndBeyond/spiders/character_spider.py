@@ -3,7 +3,6 @@ from scrapy.loader import ItemLoader
 from dndBeyond.items import DndbeyondItem
 import os
 
-
 class CharacterSpider(scrapy.Spider):
     name = "character"
     cwd = os.getcwd().replace('\\', '/')
