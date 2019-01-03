@@ -18,4 +18,7 @@ class CharacterSpider(scrapy.Spider):
         skills = response.xpath("//div[@class='ct-skills__item']")
         loader.add_value('skills',
                          skills)
+        attacks = response.xpath("//div[@class='ct-attack-table__content']/div")
+        loader.add_value('attacks',
+                         attacks)
         yield loader.load_item()

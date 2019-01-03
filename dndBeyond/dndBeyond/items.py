@@ -23,10 +23,7 @@ def mapStats(statResponses):
     for response in statResponses:
         statName = response.xpath("div/span[@class='ct-ability-summary__label']//text()").extract_first()
         statValue = response.xpath("div[@class='ct-ability-summary__primary']//text()").extract_first()
-        try:
-            modValue = getModifier(response)
-        except TypeError:
-            modValue = 0
+        modValue = getModifier(response)
         stats[statName] = {'value': statValue,
                        'modifier': modValue}
 
@@ -46,14 +43,44 @@ def mapSkills(skillResponses):
     for response in skillResponses:
         attribute = response.xpath("div[@class='ct-skills__col--stat']//text()").extract_first()
         skillName = response.xpath("div[@class='ct-skills__col--skill']//text()").extract_first()
-        try:
-            modValue = getModifier(response)
-        except TypeError:
-            modValue = 0
+        modValue = getModifier(response)
         skills[skillName] = {'attribute': attribute,
                          'modifier': modValue}
 
     yield skills
+
+def mapAttacks(attackResponses):
+    """
+    Split attackResponses into dicts with required data for each attack
+    dict will have 'hit' or 'save' fields depending on type of attack
+    Args:
+        attackResponses (list): list of scrapy Responses
+
+    Returns (dict): dictionary of the form {'attackName':{'hit'/'save': int,
+                                                          'damage': str}}
+
+    """
+    attacks = {}
+    for attackResponse in attackResponses:
+        resist = False
+        name = attackResponse.xpath("div[@class='ct-combat-attack__name']//text()").extract_first()
+        hitModiferResponse = attackResponse.xpath("div[@class='ct-combat-attack__action']")
+        try:
+            hitModifer = getModifier(hitModiferResponse)
+        except TypeError:
+            resist = True
+            saveDetails = attackResponse.xpath("div[@class='ct-combat-attack__action']//text()").extract()
+            save = f"{saveDetails[0]} {saveDetails[1]}"
+        damage = attackResponse.xpath("div[@class='ct-combat-attack__damage']//text()").extract_first()
+
+        if not resist:
+            attacks[name] = {'hit': hitModifer,
+                             'damage': damage}
+        else:
+            attacks[name] = {'save': save,
+                             'damage': damage}
+
+    yield attacks
 
 def getModifier(response):
     """
@@ -75,4 +102,6 @@ class DndbeyondItem(scrapy.Item):
     stats = scrapy.Field(input_processor = mapStats,
                         output_processor = TakeFirst())
     skills = scrapy.Field(input_processor = mapSkills,
+                        output_processor = TakeFirst())
+    attacks = scrapy.Field(input_processor = mapAttacks,
                         output_processor = TakeFirst())
