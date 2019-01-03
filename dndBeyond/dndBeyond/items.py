@@ -9,51 +9,65 @@ import scrapy
 from scrapy.loader.processors import TakeFirst
 
 
-def mapStats(statList):
+def mapStats(statResponses):
     """
-    List of stats of the character.
-    Each chunk of 5 elements relates to a single stat.
-    This will split that up and create a dictionary with the required info.
+    Split statResponses into dicts with required dat for each stat
     Args:
-        statList (list): list of strings containing details of the character's stats
+        statResponses (list): list of scrapy Responses
 
     Returns (dict): dictionary of the form {'stat':{'value': int,
                                                     'modifier': int}}
 
     """
-    statsChunks = [statList[x:x + 5] for x in range(0, len(statList), 5)]
     stats = {}
-    for chunk in statsChunks:
-        stat = chunk[0]
-        statValue = chunk[2]
-        modValue = int(chunk[-2] + chunk[-1])
-        stats[stat] = {'value': statValue,
+    for response in statResponses:
+        statName = response.xpath("div/span[@class='ct-ability-summary__label']//text()").extract_first()
+        statValue = response.xpath("div[@class='ct-ability-summary__primary']//text()").extract_first()
+        try:
+            modValue = getModifier(response)
+        except TypeError:
+            modValue = 0
+        stats[statName] = {'value': statValue,
                        'modifier': modValue}
 
     yield stats
 
-def mapSkills(skillList):
+def mapSkills(skillResponses):
     """
-    List of skills of the character.
-    Each chunk of 4 elements relates to a single stat.
-    This will split that up and create a dictionary with the required info.
+    Split skillResponses into dicts with required dat for each stat
     Args:
-        skillList (list): list of strings containing details of the character's skills
+        skillResponses (list): list of scrapy Responses
 
     Returns (dict): dictionary of the form {'stat':{'attribute': str,
                                                     'modifier': int}}
 
     """
-    skillsChunks = [skillList[x:x + 4] for x in range(0, len(skillList), 4)]
     skills = {}
-    for chunk in skillsChunks:
-        attribute = chunk[0]
-        skill = chunk[1]
-        modValue = int(chunk[2] + chunk[3])
-        skills[skill] = {'attribute': attribute,
+    for response in skillResponses:
+        attribute = response.xpath("div[@class='ct-skills__col--stat']//text()").extract_first()
+        skillName = response.xpath("div[@class='ct-skills__col--skill']//text()").extract_first()
+        try:
+            modValue = getModifier(response)
+        except TypeError:
+            modValue = 0
+        skills[skillName] = {'attribute': attribute,
                          'modifier': modValue}
 
     yield skills
+
+def getModifier(response):
+    """
+    Get the modifers from the response
+    Args:
+        response (Scrapy response): scrapy response representing a node for a specific attribute
+
+    Returns (int): the modifer amount
+
+    """
+    modSymbol = response.xpath("div/span/span[@class='ct-signed-number__sign']//text()").extract_first()
+    modAmount = response.xpath("div/span/span[@class='ct-signed-number__number']//text()").extract_first()
+    print(response)
+    return int(modSymbol + modAmount)
 
 
 class DndbeyondItem(scrapy.Item):
