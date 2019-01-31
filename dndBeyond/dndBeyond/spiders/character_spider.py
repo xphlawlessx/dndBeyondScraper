@@ -1,12 +1,23 @@
 import scrapy
+from scrapy_splash import SplashRequest
 from scrapy.loader import ItemLoader
 from dndBeyond.items import DndbeyondItem
 import os
+import json
 
 class CharacterSpider(scrapy.Spider):
     name = "character"
-    cwd = os.getcwd().replace('\\', '/')
-    start_urls = [f'file://{cwd}/test.html']
+    start_urls = ["https://www.dndbeyond.com/profile/Further_Reading/characters/6268603"]
+
+    def start_requests(self):
+        req_url = "http://localhost:8050/render.html"
+        body = json.dumps({
+            "url": "https://www.dndbeyond.com/profile/Further_Reading/characters/6268603",
+            "wait": 5,
+        })
+        headers = {'Content-Type': 'application/json'}
+        yield scrapy.Request(req_url, self.parse, method='POST',
+                             body=body, headers=headers)
 
     def parse(self, response):
         loader = ItemLoader(item=DndbeyondItem(), response=response)
