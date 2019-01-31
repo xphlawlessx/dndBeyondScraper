@@ -1,5 +1,4 @@
 import scrapy
-from scrapy_splash import SplashRequest
 from scrapy.loader import ItemLoader
 from dndBeyond.items import DndbeyondItem
 import os
