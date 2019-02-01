@@ -10,13 +10,14 @@ class CharacterSpider(scrapy.Spider):
 
     def start_requests(self):
         req_url = "http://localhost:8050/render.html"
-        body = json.dumps({
-            "url": "https://www.dndbeyond.com/profile/Further_Reading/characters/6268603",
-            "wait": 5,
-        })
-        headers = {'Content-Type': 'application/json'}
-        yield scrapy.Request(req_url, self.parse, method='POST',
-                             body=body, headers=headers)
+        for url in start_urls:
+            body = json.dumps({
+                "url": url,
+                "wait": 5,
+            })
+            headers = {'Content-Type': 'application/json'}
+            yield scrapy.Request(req_url, self.parse, method='POST',
+                                 body=body, headers=headers)
 
     def parse(self, response):
         loader = ItemLoader(item=DndbeyondItem(), response=response)
