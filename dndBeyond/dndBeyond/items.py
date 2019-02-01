@@ -24,6 +24,7 @@ def mapStats(statResponses):
         statName = response.xpath("div/span[@class='ct-ability-summary__label']//text()").extract_first()
         statValue = response.xpath("div[@class='ct-ability-summary__primary']//text()").extract_first()
         if statValue in "-+":
+            # primary and secondary flipped
             statValue = response.xpath("div[@class='ct-ability-summary__secondary']//text()").extract_first()
         modValue = getModifier(response)
         stats[statName] = {'value': statValue,
