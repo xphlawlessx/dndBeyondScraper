@@ -62,21 +62,16 @@ def mapAttacks(attackResponses):
     """
     attacks = {}
     for attackResponse in attackResponses:
-        resist = False
         name = attackResponse.xpath("div[@class='ct-combat-attack__name']//text()").extract_first()
         hitModiferResponse = attackResponse.xpath("div[@class='ct-combat-attack__action']")
+        damage = attackResponse.xpath("div[@class='ct-combat-attack__damage']//text()").extract_first()
         try:
             hitModifer = getModifier(hitModiferResponse)
-        except TypeError:
-            resist = True
-            saveDetails = attackResponse.xpath("div[@class='ct-combat-attack__action']//text()").extract()
-            save = f"{saveDetails[0]} {saveDetails[1]}"
-        damage = attackResponse.xpath("div[@class='ct-combat-attack__damage']//text()").extract_first()
-
-        if not resist:
             attacks[name] = {'hit': hitModifer,
                              'damage': damage}
-        else:
+        except TypeError:
+            saveDetails = attackResponse.xpath("div[@class='ct-combat-attack__action']//text()").extract()
+            save = f"{saveDetails[0]} {saveDetails[1]}"
             attacks[name] = {'save': save,
                              'damage': damage}
 
