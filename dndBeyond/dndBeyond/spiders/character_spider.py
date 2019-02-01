@@ -9,6 +9,8 @@ class CharacterSpider(scrapy.Spider):
     start_urls = ["https://www.dndbeyond.com/profile/Further_Reading/characters/6268603"]
 
     def start_requests(self):
+        # Note - requires a splashy image running on a docker
+        # see https://blog.scrapinghub.com/2015/03/02/handling-javascript-in-scrapy-with-splash
         req_url = "http://localhost:8050/render.html"
         for url in self.start_urls:
             body = json.dumps({
