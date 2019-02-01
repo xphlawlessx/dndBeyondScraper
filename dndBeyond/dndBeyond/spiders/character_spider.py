@@ -10,7 +10,7 @@ class CharacterSpider(scrapy.Spider):
 
     def start_requests(self):
         req_url = "http://localhost:8050/render.html"
-        for url in start_urls:
+        for url in self.start_urls:
             body = json.dumps({
                 "url": url,
                 "wait": 5,
