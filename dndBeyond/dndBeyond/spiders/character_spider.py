@@ -6,7 +6,9 @@ import json
 
 class CharacterSpider(scrapy.Spider):
     name = "character"
-    start_urls = ["https://www.dndbeyond.com/profile/Further_Reading/characters/6268603"]
+    start_urls = ["https://www.dndbeyond.com/profile/Further_Reading/characters/6268603",
+                  "https://www.dndbeyond.com/profile/Further_Reading/characters/6363841",
+                  "https://www.dndbeyond.com/profile/Further_Reading/characters/7673827"]
 
     def start_requests(self):
         # Note - requires a splashy image running on a docker
